@@ -1,9 +1,11 @@
 
 services:
+  
   event-hive-api:
     build: 
       context: .
       dockerfile: EventHive/Dockerfile
+    hostname: EventHiveApi
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
@@ -11,6 +13,8 @@ services:
       - db_net
     ports:
       - 8080:80
+    depends_on:
+      - database-1
   
   database-1:
     build: MySqlServer/
@@ -22,7 +26,7 @@ services:
     networks:
       - db_net
     ports:
-      - 8083:3306
+      - 3306:3306
         
 networks:
   db_net:

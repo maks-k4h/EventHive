@@ -1,3 +1,3 @@
-DROP USER IF EXISTS 'user'@'%';
-CREATE USER 'user'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'user'@'%' WITH GRANT OPTION;
+DROP USER IF EXISTS 'EventHiveApi'@'%';
+CREATE USER 'EventHiveApi'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'EventHiveApi'@'%' WITH GRANT OPTION;

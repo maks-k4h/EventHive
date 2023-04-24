@@ -1,0 +1,17 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  event-hive-api:
+    build:
+      context: "/Users/makskonevych/Documents/C#/Labs/EventHive"
+      dockerfile: "EventHive/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net7.0/EventHive.dll"
+    environment: {}
+    image: "eventhive:dev"
+    ports: []
+    volumes:
+    - "/Users/makskonevych/Documents/C#/Labs/EventHive/EventHive:/app:rw"
+    working_dir: "/app"
