@@ -11,8 +11,4 @@ RUN dotnet build "EventHive/EventHive.csproj" -c Debug -o /app/build
 FROM build AS debug
 RUN dotnet publish "EventHive/EventHive.csproj" -c Debug -o /app/debug
 WORKDIR /app/debug
-COPY EventHive/secrets/ secrets/
-RUN ["apt-get", "update"]
-RUN ["apt", "install", "-y", "nmap"]
-RUN ["apt", "install", "-y", "nano"]
 ENTRYPOINT ["dotnet", "EventHive.dll"]

@@ -1,0 +1,32 @@
+
+services:
+  event-hive-api:
+    build: 
+      context: .
+      dockerfile: EventHive/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    networks: 
+      - db_net
+    ports:
+      - 8080:80
+  
+  database-1:
+    build: MySqlServer/
+    hostname: MySqlService
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+    volumes:
+      - mysql-1:/var/lib/mysql
+    networks:
+      - db_net
+    ports:
+      - 8083:3306
+        
+networks:
+  db_net:
+    driver: bridge
+    
+volumes:
+  mysql-1:
