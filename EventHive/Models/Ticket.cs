@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EventHive.Models;
 
@@ -8,21 +9,22 @@ public class Ticket
     [Required(ErrorMessage = "Ticket must have an id")]
     public int Id { get; set; }
     
-    [Display(Name = "Id")]
+    [Display(Name = "Ticket Vault Id")]
     [Required(ErrorMessage = "Category must refer to a Ticket Vault")]
     public int TicketVaultId { get; set; }
     
     [Display(Name = "Holder")]
     [Required(ErrorMessage = "Ticket must have a holder")]
     [MaxLength(100, ErrorMessage = "Holder's name is too long")]
-    public string Holed { get; set; } = null!;
+    public string Holder { get; set; } = null!;
     
     [Display(Name = "Paid price")]
-    public double? PaidPrice { get; set; }
+    public double PaidPrice { get; set; }
     
     [Display(Name = "Purchase time")]
     public DateTime? PurchaseTime { get; set; }
 
+    [JsonIgnore]
     [Display(Name = "Ticket Vault")]
     public virtual TicketVault? TicketVault { get; set; } = null;
 }

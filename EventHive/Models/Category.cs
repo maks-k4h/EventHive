@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EventHive.Models;
 
@@ -13,5 +14,6 @@ public class Category
     [MaxLength(100, ErrorMessage = "The name is too long")]
     public string Name { get; set; } = null!;
 
+    [JsonIgnore]
     public virtual ICollection<CategoryEvent> CategoryEvents { get; set; } = new List<CategoryEvent>();
 }

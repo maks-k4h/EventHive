@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace EventHive.Models;
 
@@ -16,5 +17,6 @@ public class Event
     [Display(Name = "Description")]
     public string? Description { get; set; } = null;
 
+    [JsonIgnore]
     public virtual ICollection<CategoryEvent> CategoryEvents { get; set; } = new List<CategoryEvent>();
 }

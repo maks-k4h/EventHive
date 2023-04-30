@@ -1,5 +1,7 @@
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace EventHive.Models;
 
@@ -19,7 +21,7 @@ public class TicketVault
     public string Title { get; set; } = null!;
 
     [Display(Name = "Ticket price")]
-    public double? Price { get; set; }
+    public double Price { get; set; }
 
     [Display(Name = "Total tickets")]
     public int? TotalTickets { get; set; }
@@ -27,12 +29,15 @@ public class TicketVault
     [Display(Name = "Tickets left")]
     public int? TicketsLeft { get; set; }
 
+    [JsonIgnore]
     [Display(Name = "Event")]
     public virtual Event? Event { get; set; } = null;
     
+    [JsonIgnore]
     [Display(Name = "Tickets")]
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
+    [JsonIgnore]
     [Display(Name = "Promo codes")]
     public virtual ICollection<PromoCode> PromoCodes { get; set; } = new List<PromoCode>();
 }
