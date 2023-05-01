@@ -66,6 +66,12 @@ namespace EventHive.Controllers
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
+            category.Name = category.Name.Trim();
+            if (await _context.Categories.CountAsync(c => c.Name.ToLower() == category.Name.ToLower()) > 0)
+            {
+                return BadRequest("Such a category already exists.");
+            }
+
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
         }
 

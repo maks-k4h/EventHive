@@ -17,6 +17,7 @@ public class TicketVault
 
     [Display(Name = "Ticket type")]
     [Required(ErrorMessage = "Ticket type must have a title")]
+    [MinLength(1, ErrorMessage = "Ticket type's title is too short")]
     [MaxLength(100, ErrorMessage = "Ticket type's title is too long")]
     public string Title { get; set; } = null!;
 

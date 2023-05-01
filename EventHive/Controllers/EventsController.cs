@@ -58,6 +58,14 @@ namespace EventHive.Controllers
             {
                 return BadRequest();
             }
+            
+            // check event's date
+            if (@event.DateAndTime != null && 
+                (@event.DateAndTime < DateTime.Now || 
+                 @event.DateAndTime > DateTime.Now + Constants.Events.EventDateFromNow))
+            {
+                return BadRequest("Invalid date.");
+            }
 
             _context.Entry(@event).State = EntityState.Modified;
 
@@ -94,6 +102,15 @@ namespace EventHive.Controllers
             {
                 return BadRequest("Event with such an id already exists.");
             }
+            
+            // check event's date
+            if (@event.DateAndTime != null && 
+                (@event.DateAndTime < DateTime.Now || 
+                 @event.DateAndTime > DateTime.Now + Constants.Events.EventDateFromNow))
+            {
+                return BadRequest("Invalid date.");
+            }
+            
             _context.Events.Add(@event);
             await _context.SaveChangesAsync();
 

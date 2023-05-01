@@ -11,6 +11,7 @@ public class Category
     
     [Display(Name = "Name")]
     [Required(ErrorMessage = "Category must have a name")]
+    [MinLength(1, ErrorMessage = "The name is too short")]
     [MaxLength(100, ErrorMessage = "The name is too long")]
     public string Name { get; set; } = null!;
 

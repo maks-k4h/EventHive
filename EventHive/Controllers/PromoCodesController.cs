@@ -63,14 +63,22 @@ namespace EventHive.Controllers
             {
                 return NotFound();
             }
-
+            
             // normalize code
-            promoCode.Code = promoCode.Code.Normalize();
+            promoCode.Code = promoCode.Code.Normalize().Trim();
+            
+            // check if the ticket vault already has such promo code
+            if (await _context
+                    .PromoCodes
+                    .CountAsync(pc => pc.TicketVaultId == promoCode.TicketVaultId && pc.Code == promoCode.Code) > 0)
+            {
+                return BadRequest("This ticket vault already has such promo code.");
+            }
 
             // check if . already exists
             if (await _context
                     .PromoCodes
-                    .CountAsync(pc => pc.TicketVault == promoCode.TicketVault && pc.Code == promoCode.Code)
+                    .CountAsync(pc => pc.TicketVaultId == promoCode.TicketVaultId && pc.Code == promoCode.Code)
                 > 0)
             {
                 return Problem("Such a promo code already exists");

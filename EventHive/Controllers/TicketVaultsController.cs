@@ -65,28 +65,51 @@ namespace EventHive.Controllers
             {
                 return BadRequest();
             }
+            
+            var tv = await _context.TicketVaults.FindAsync(ticketVault.Id);
+            if (tv == null)
+            {
+                return NotFound();
+            }
 
+            // check if eventId's are the same
+            if (tv.EventId != ticketVault.EventId)
+            {
+                return BadRequest("Cannot change eventId.");
+            }
+
+            // check if this event already has ticket vault with such a title
+            ticketVault.Title = ticketVault.Title.Trim();
+            if (await _context.TicketVaults.CountAsync(tv => tv.EventId == ticketVault.EventId && tv.Id != id && tv.Title.ToLower() == ticketVault.Title.ToLower()) > 0)
+            {
+                return BadRequest("This event already has a ticket vault with such name.");
+            }
+            
+            // check price
+            if (ticketVault.Price < 0)
+            {
+                return BadRequest("Price cannot be negative.");
+            }
+            
+            // check total tickets
+            if (ticketVault.TotalTickets is < 0)
+            {
+                return BadRequest("Total number of tickets cannot be negative");
+            }
+            
+            // check tickets left
+            if (ticketVault.TicketsLeft is < 0 ||
+                (ticketVault.TotalTickets != null && ticketVault.TicketsLeft > ticketVault.TotalTickets))
+            {
+                return BadRequest("Invalid number of tickets left");
+            }
+
+            // save changes
+            _context.Entry(tv).State = EntityState.Detached;
             _context.Entry(ticketVault).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TicketVaultExists(id))
-                {
-                    return NotFound();
-                }
-                if (await _context.Events.FindAsync(ticketVault.EventId) == null)
-                {
-                    return BadRequest("No such event found.");
-                }
-                
-                throw;
-            }
-
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/TicketVaults
@@ -107,6 +130,32 @@ namespace EventHive.Controllers
             if (await _context.Events.FindAsync(ticketVault.EventId) == null)
             {
                 return BadRequest("No such event found.");
+            }
+            
+            // check if this event already has ticket vault with such a title
+            ticketVault.Title = ticketVault.Title.Trim();
+            if (await _context.TicketVaults.CountAsync(tv => tv.EventId == ticketVault.EventId && tv.Title.ToLower() == ticketVault.Title.ToLower()) > 0)
+            {
+                return BadRequest("This event already has a ticket vault with such name.");
+            }
+            
+            // check price
+            if (ticketVault.Price < 0)
+            {
+                return BadRequest("Price cannot be negative.");
+            }
+            
+            // check total tickets
+            if (ticketVault.TotalTickets is < 0)
+            {
+                return BadRequest("Total number of tickets cannot be negative");
+            }
+            
+            // check tickets left
+            if (ticketVault.TicketsLeft is < 0 ||
+                (ticketVault.TotalTickets != null && ticketVault.TicketsLeft > ticketVault.TotalTickets))
+            {
+                return BadRequest("Invalid number of tickets left");
             }
             
             _context.TicketVaults.Add(ticketVault);

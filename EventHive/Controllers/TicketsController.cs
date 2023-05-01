@@ -72,15 +72,9 @@ namespace EventHive.Controllers
             }
 
             // check if any tickets left
-            if (ticketVault.TicketsLeft < 1)
+            if (ticketVault.TicketsLeft is < 1)
             {
                 return Problem("No tickets left.");
-            }
-
-            // check if holder's name is provided
-            if (order.Holder.Trim().Length == 0)
-            {
-                return BadRequest("Ticket holder is not specified.");
             }
 
             // create ticket

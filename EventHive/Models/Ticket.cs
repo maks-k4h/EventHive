@@ -15,6 +15,7 @@ public class Ticket
     
     [Display(Name = "Holder")]
     [Required(ErrorMessage = "Ticket must have a holder")]
+    [MinLength(2, ErrorMessage = "Holder's name is too short")]
     [MaxLength(100, ErrorMessage = "Holder's name is too long")]
     public string Holder { get; set; } = null!;
     
