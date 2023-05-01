@@ -1,0 +1,301 @@
+
+// 1. Create event categories
+
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 12,
+  "name": "Music"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 13,
+  "name": "Food and drinks"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 14,
+  "name": "Comedy"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 15,
+  "name": "Learning and education"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 16,
+  "name": "Ai"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 17,
+  "name": "Social"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 18,
+  "name": "Art and creativity"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 21,
+  "name": "Technology"
+}
+###
+POST localhost:5083/api/Categories
+Content-Type: application/json
+
+{
+  "id": 19,
+  "name": "Health and wellness"
+}
+###
+
+
+// 2. Create events
+
+###
+POST localhost:5083/api/Events
+Content-Type: application/json
+
+{
+  "id": 19,
+  "name": "Cooking Class",
+  "description": "A hands-on cooking class where guests can learn how to prepare a particular cuisine or dish under the guidance of a professional chef."
+}
+###
+POST localhost:5083/api/Events
+Content-Type: application/json
+
+{
+  "id": 21,
+  "name": "Live Music Showcase",
+  "description": "A night of live music featuring local artists from a variety of genres."
+}
+###
+POST localhost:5083/api/Events
+Content-Type: application/json
+
+{
+  "id": 30,
+  "name": "Yoga and Brunch",
+  "description": "Guests start their Sunday with a relaxing yoga session followed by a delicious brunch spread."
+}
+###
+POST localhost:5083/api/Events
+Content-Type: application/json
+
+{
+  "id": 33,
+  "name": "Comedy Night",
+  "description": "A hilarious night of stand-up comedy featuring both up-and-coming and well-known comedians."
+}
+###
+POST localhost:5083/api/Events
+Content-Type: application/json
+
+{
+  "id": 36,
+  "name": "AI in Healthcare Conference",
+  "description": "A conference exploring how AI is transforming the healthcare industry. Sessions will cover topics such as AI-assisted diagnosis, predictive modeling, and personalized treatment plans."
+}
+###
+
+
+// 3. Link categories to events
+
+POST localhost:5083/api/Events/19/Categories/13
+###
+POST localhost:5083/api/Events/21/Categories/12
+###
+POST localhost:5083/api/Events/21/Categories/14
+###
+POST localhost:5083/api/Events/30/Categories/19
+###
+POST localhost:5083/api/Events/33/Categories/14
+###
+POST localhost:5083/api/Events/33/Categories/17
+###
+POST localhost:5083/api/Events/36/Categories/16
+###
+POST localhost:5083/api/Events/36/Categories/21
+###
+
+
+// 4. Create ticket vaults
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+    "eventid": 19,
+    "title": "Standard",
+    "price": 59.89,
+    "totaltickets": 60,
+    "ticketsleft": 48
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 21,
+  "title": "General Admission",
+  "price": 34.89,
+  "totaltickets": 6000,
+  "ticketsleft": 5500
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 21,
+  "title": "VIP",
+  "price": 84.89,
+  "totaltickets": 200,
+  "ticketsleft": 190
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 21,
+  "title": "Reserved seating",
+  "price": 34.89,
+  "totaltickets": 600,
+  "ticketsleft": 500
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 30,
+  "title": "Standard",
+  "price": 44.49,
+  "totaltickets": 720,
+  "ticketsleft": 660
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 33,
+  "title": "General Admission",
+  "price": 34.89,
+  "totaltickets": 110,
+  "ticketsleft": 950
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 33,
+  "title": "Front Row Seats",
+  "price": 51.49,
+  "totaltickets": 110,
+  "ticketsleft": 950
+}
+###
+
+POST localhost:5083/api/TicketVaults
+Content-Type: application/json
+
+{
+  "eventid": 36,
+  "title": "Online",
+  "price": 0
+}
+###
+
+
+// 5. Add promocodes
+
+POST localhost:5083/api/PromoCodes
+Content-Type: application/json
+
+{
+  "ticketvaultid": 1,
+  "code": "DELICIOUS",
+  "discount": 0.2
+}
+###
+
+POST localhost:5083/api/PromoCodes
+Content-Type: application/json
+
+{
+  "ticketvaultid": 4,
+  "code": "FESTIVAL10",
+  "discount": 0.1
+}
+###
+
+
+// Purchase several tickets
+
+POST localhost:5083/api/tickets/purchase/1
+Content-Type: application/json
+
+{
+  "ticketvaultid": 1,
+  "holder": "Ramy Coe",
+  "promocode": "DELICIOUS"
+}
+###
+
+POST localhost:5083/api/tickets/purchase/4
+Content-Type: application/json
+
+{
+  "ticketvaultid": 4,
+  "holder": "Ramy Coe"
+}
+###
+
+POST localhost:5083/api/tickets/purchase/4
+Content-Type: application/json
+
+{
+  "ticketvaultid": 4,
+  "holder": "Jennifer Lee",
+  "promocode": "FESTIVAL10"
+}
+###
+
+
+
+
