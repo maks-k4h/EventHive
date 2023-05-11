@@ -34,7 +34,13 @@ namespace EventHive.Controllers
             
             var res = await _context.TicketVaults.Where(tv => tv.EventId == eventId).ToListAsync();
             if (res.Count == 0)
-                return NotFound();
+            {
+                // check if such an event exists at all
+                var e = await _context.Events.FindAsync(eventId);
+                if (e is null) 
+                    return NotFound();
+            }
+                
             return res;
         }
 

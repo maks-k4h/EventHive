@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-template"></div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); padding: 15px">
+        <div class="event-image-big-wrapper">
+            <div class="event-image-big">
+                <h3 style="color: white">Event's Image</h3>
+            </div>
+        </div>
+        <div class="" style="padding: 15px">
+            <h2 class="insert-event-name">Name should be here</h2>
+            <p>Held on <span class="insert-event-date-time"></span></p>
+            <p class="insert-event-description"></p>
+            <div class="event-categories" id="insert-event-categories"></div>
+        </div>
+    </div>
+
+    <h2 style="text-align: center">Tickets</h2>
+    <div id="insert-ticket-vaults-grid"></div>
+
+    
+    
+    <div class="purchase-ticket-form-wrapper" id="purchase-ticket-form-wrapper" hidden="hidden">
+        <h2 style="text-align: center; margin-top: 30px">Ready? Get your tickets now!</h2>
+        <div class="form-group">
+            <label for="ticket-vault-select" class="form-label mt-4">Example select</label>
+            <select class="form-select" id="ticket-vault-select">
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-holder" class="form-label mt-4">Holder's full name</label>
+            <input class="form-control" id="ticket-vault-holder" placeholder="Bobby Darin">
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-promo-code" class="form-label mt-4">Have a promo code?</label>
+            <input class="form-control" id="ticket-vault-promo-code" placeholder="Your promo code">
+        </div>
+
+        <div class="form-group">
+            <label id="purchase-ticket-error" class="text-danger form-check mt-2"></label>
+        </div>
+
+        <div class="form-group mt-2" id="purchase-ticket">
+            <button type="submit" class="form-control btn btn-primary" onclick="purchaseTicket()">Submit</button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div id="footer-template"></div>
+    
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+        renderEvent()
+        if (params.get('id') == null)
+            document.location.replace('/events/index.html')
+    </script>
+</body>
+</html>

@@ -16,11 +16,12 @@
 
 
 // load bootstrap
-document.body.innerHTML += '<link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css">'
-document.body.innerHTML += '<script src="lib/bootstrap/dist/js/bootstrap.js"></script>'
+document.body.innerHTML += '<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css">'
+document.body.innerHTML += '<link rel="stylesheet" href="/css/site.css">'
+document.body.innerHTML += '<script src="/lib/bootstrap/dist/js/bootstrap.js"></script>'
 
 // insert header if needed
-headerDiv = document.getElementById("header-template")
+let headerDiv = document.getElementById("header-template")
 if (headerDiv != null) 
 {
     fetch("/templates/header.html")
@@ -29,7 +30,7 @@ if (headerDiv != null)
 }
 
 // insert footer if needed
-footerDiv = document.getElementById("footer-template")
+let footerDiv = document.getElementById("footer-template")
 if (headerDiv != null)
 {
     

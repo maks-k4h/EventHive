@@ -20,3 +20,76 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+.header-wrapper {
+  padding: 30px 70px;
+}
+
+
+/* Events */
+#events-grid {
+  margin: 5px auto;
+  display: grid;
+  width: 80%;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.event-inner {
+  width: 300px;
+  margin: 0 auto;
+}
+
+.event-categories * {
+  margin: 5px;
+  
+}
+
+.event-image {
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: 300px;
+  height: 200px;
+  background-color: #868e96;
+  color: white;
+  display: flex; 
+  align-items: center; 
+  justify-content: center
+}
+
+.event-image-big-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.event-image-big {
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: 500px;
+  height: 375px;
+  background-color: #868e96;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.event-name-link {
+  text-decoration: none;
+}
+
+
+/* Tickets */
+.ticket-vault-card-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.purchase-ticket-form-wrapper {
+  margin: 0 auto;
+  max-width: 90%;
+  width: 500px;
+}
