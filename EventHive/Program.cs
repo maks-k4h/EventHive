@@ -14,6 +14,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseDefaultFiles();
 app.UseRouting();
 
 app.UseEndpoints(endpoints =>
