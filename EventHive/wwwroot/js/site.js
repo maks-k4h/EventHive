@@ -18,6 +18,12 @@ const TicketsPurchaseUri = '/Purchase'
 const queryString = location.search
 const params = new URLSearchParams(queryString)
 
+
+function _operationFailedAlert() 
+{
+    alert('Operation failed.')
+}
+
 function renderEventsGrid(wrapperId) 
 {
     let wrapper = document.getElementById(wrapperId)
@@ -300,4 +306,145 @@ function purchaseTicket()
         .catch(reason => {
             console.error(reason.message)
         })
+}
+
+
+function renderTicket(redirectPath = null)
+{
+    /*
+    * Insert:
+    *   - ticket vault title into .insert-ticket-vault-title
+    *   - ticket holder into .insert-ticket-holder
+    *   - ticket purchase time into .insert-ticket-purchase-time
+    *   - paid price into .insert-paid-price
+    * 
+    * */
+    
+    // get ticket id
+    let ticketId = params.get('id')
+    if (!ticketId)
+        return
+    
+    // get and render ticket
+    fetch(ApiUri + TicketsUri + '/' + ticketId)
+        .then(async response => {
+            if (response.ok) {
+                _renderTicket(await response.json(), redirectPath)
+            } else {
+                document.location.replace('/index.html')
+            }
+        })
+        .catch(reason =>
+        {
+            document.location.replace('/index.html')
+        })
+}
+
+function _renderTicket(data, redirectPath = null)
+{
+    /*
+    * Attention: method contains spaghetti, bon appétit.
+    * */
+    
+    // retrieve fields
+    let titleElements = document.getElementsByClassName('insert-event-name')
+    let typeElements = document.getElementsByClassName('insert-ticket-vault-title')
+    let holderElements = document.getElementsByClassName('insert-ticket-holder')
+    let timeElements = document.getElementsByClassName('insert-ticket-purchase-time')
+    let priceElements = document.getElementsByClassName('insert-paid-price')
+    let codeElements = document.getElementsByClassName('insert-ticket-code')
+    
+    for (let i = 0; i < holderElements.length; ++i) {
+        holderElements[i].value = data.holder.length > 0 ? data.holder : 'unknown'
+    }
+    for (let i = 0; i < timeElements.length; ++i) {
+        timeElements[i].value = data.purchaseTime
+    }
+    for (let i = 0; i < codeElements.length; ++i) {
+        codeElements[i].value = data.id
+    }
+    for (let i = 0; i < priceElements.length; ++i) {
+        priceElements[i].value = data.paidPrice
+    }
+
+    // retrieve ticket vault
+    fetch(ApiUri + TicketVaultsUri + '/' + data.ticketVaultId)
+        .then(response => response.json())
+        .then(data => {
+            
+            for (let i = 0; i < typeElements.length; ++i) {
+                typeElements[i].value = data.title
+            }
+            
+            // retrieve event
+            fetch(ApiUri + EventsUri + '/' + data.eventId)
+                .then(response => response.json())
+                .then(data => {
+                    for (let i = 0; i < titleElements.length; ++i) {
+                        titleElements[i].value = data.name
+                    }
+
+                })
+                .catch(reason =>
+                {
+                    if (redirectPath)
+                        document.location.replace(redirectPath)
+                    else
+                        console.error('Cannot retrieve event with id ' + data.eventId)
+                })
+        })
+        .catch(reason =>
+        {
+            if (redirectPath)
+                document.location.replace(redirectPath)
+            else
+                console.error('Cannot retrieve ticket vault with id ' + data.ticketVaultId)
+        })
+}
+
+function goToTicket()
+{
+    try {
+        
+        let ticketId = parseInt(document.getElementById('ticket-id').value)
+        if (!ticketId)
+            throw Error()
+        
+        fetch(ApiUri + TicketsUri + '/' + ticketId)
+            .then(response => {
+                if (response.ok)
+                    document.location.replace('/tickets/ticket.html?id=' + ticketId)
+                else
+                    _processTicketCheckError()
+            })
+            .catch(reason => _processTicketCheckError())
+    }
+    catch {
+        _processTicketCheckError()
+    }
+}
+
+function _processTicketCheckError() {
+    let errorLabel = document.getElementById('check-ticket-error')
+    if (errorLabel) {
+        errorLabel.innerText = 'Cannot find the ticket'
+    } else {
+        console.error('Cannot find the ticket, cannot find #check-ticket-error label.')
+    }
+}
+
+function deleteTicket(redirectPath = '/index.html') {
+    if (confirm('Are you sure you want to delete the ticket?')) {
+        fetch(ApiUri + TicketsUri + '/' + params.get('id'), {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.location.replace(redirectPath)
+                }
+                else
+                    _operationFailedAlert()
+            })
+            .catch(reason => console.error(reason.message))
+    }
 }

@@ -12,14 +12,16 @@ builder.Services.AddDbContext<EventHiveContext>(option => option.UseMySql(
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseDefaultFiles();
 app.UseRouting();
 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseDefaultFiles();
+
 
 app.Run();

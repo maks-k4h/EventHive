@@ -93,3 +93,13 @@ body {
   max-width: 90%;
   width: 500px;
 }
+.go-to-ticket-form-wrapper {
+  margin: 0 auto;
+  max-width: 90%;
+  width: 500px;
+}
+.ticket-information-wrapper {
+  margin: 20px auto;
+  max-width: 90%;
+  width: 500px;
+}

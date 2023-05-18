@@ -18,9 +18,6 @@ public class HomeController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return Json(new Dictionary<string, string>
-        {
-            {"message", "Hello!"}
-        });
+        return Redirect("/index.html");
     }
 }

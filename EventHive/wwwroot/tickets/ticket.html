@@ -5,6 +5,57 @@
     <title>Ticket</title>
 </head>
 <body>
+    
+    <div id="header-template"></div>
+    
+    
+    <div class="ticket-information-wrapper">
+        <h2>Ticket Information</h2>
+        
+        <div class="form-group">
+            <fieldset>
+                <label class="form-label mt-4" for="ticketEventNameInput">Event</label>
+                <input class="form-control insert-event-name" id="ticketEventNameInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
+            <fieldset>
+                <label class="form-label mt-4" for="ticketVaultTitleInput">Type</label>
+                <input class="form-control insert-ticket-vault-title" id="ticketVaultTitleInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
+            <fieldset>
+                <label class="form-label mt-4" for="ticketHolderInput">Holder</label>
+                <input class="form-control insert-ticket-holder" id="ticketHolderInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
+            <fieldset>
+                <label class="form-label mt-4" for="paidPriceInput">Paid Price</label>
+                <input class="form-control insert-paid-price" id="paidPriceInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
+            <fieldset>
+                <label class="form-label mt-4" for="purchaseTimeInput">Purchase Time</label>
+                <input class="form-control insert-ticket-purchase-time" id="purchaseTimeInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
+            <fieldset>
+                <label class="form-label mt-4" for="codeInput">Code</label>
+                <input class="form-control insert-ticket-code" id="codeInput" type="text" placeholder="Readonly input here..." readonly="">
+            </fieldset>
 
+            <fieldset style="margin-top: 20px">
+                <button type="button" class="form-control btn btn-outline-danger" onclick="deleteTicket()">Delete</button>
+            </fieldset>
+        </div>
+        
+    </div>
+
+    
+    
+    <div id="footer-template"></div>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+        // if (params.get('id'))
+        //     document.location.replace('/tickets/index.html')
+        
+        renderTicket()
+    </script>
 </body>
 </html>
