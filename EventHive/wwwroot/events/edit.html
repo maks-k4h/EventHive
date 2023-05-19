@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit</title>
+</head>
+<body>
+
+    <!-- Header -->
+    <div id="header-template"></div>
+
+    <div class="header-wrapper">
+        <h2>Edit Event</h2>
+    </div>
+
+    <div class="purchase-ticket-form-wrapper" id="purchase-ticket-form-wrapper">
+        <h2 style="text-align: center; margin-top: 30px">General information</h2>
+        
+        <div class="form-group has-danger">
+            <label for="event-name" class="form-label mt-4">Name</label>
+            <input class="form-control" id="event-name" placeholder="Event's name" onchange="validateEventName()">
+            <div class="invalid-feedback" id="event-name-error">This field cannot be empty.</div>
+        </div>
+
+        <div class="form-group has-danger">
+            <label for="event-date-and-time" class="form-label mt-4">Date and Time</label>
+            <input class="form-control" id="event-date-and-time" placeholder="2029-12-19T18:30" onchange="validateEventDateAndTime()">
+            <div class="invalid-feedback" id="event-date-and-time-error">Wrong format; example: 2029-12-19T18:30.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="event-description" class="form-label mt-4">Description</label>
+            <textarea class="form-control" id="event-description" rows="3" placeholder="This event will leave you speechless with its..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label id="create-event-error" class="text-danger form-check mt-2"></label>
+        </div>
+
+        <div class="form-group mt-2">
+            <button type="submit" class="form-control btn btn-primary" onclick="saveEvent()">Save</button>
+        </div>
+        
+        
+        <h2 style="text-align: center; margin-top: 50px">Add new ticket type</h2>
+
+        <div class="form-group has-danger">
+            <label for="ticket-vault-title" class="form-label mt-4">Title</label>
+            <input class="form-control" id="ticket-vault-title" placeholder="Type's name" onchange="validateTicketVaultTitle()">
+            <div class="invalid-feedback" id="ticket-vault-title-error">This field cannot be empty.</div>
+        </div>
+
+        <div class="form-group has-danger">
+            <label for="ticket-vault-price" class="form-label mt-4">Price</label>
+            <div class="input-group mb-3" id="ticket-vault-price-wrapper">
+                <span class="input-group-text">$</span>
+                <input type="text" id="ticket-vault-price" class="form-control" onchange="validateTicketVaultPrice()">
+                
+            </div>
+            <div class="invalid-feedback" id="ticket-vault-price-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-total" class="form-label mt-4">Total</label>
+            <input class="form-control" id="ticket-vault-total" placeholder="Total number of tickets..."  onchange="validateTicketVaultTotal()"></input>
+            <div class="invalid-feedback" id="ticket-vault-total-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-left" class="form-label mt-4">Left</label>
+            <input class="form-control" id="ticket-vault-left" placeholder="Number of tickets left..."  onchange="validateTicketVaultLeft()"></input>
+            <div class="invalid-feedback" id="ticket-vault-left-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label id="create-ticket-vault-error" class="text-danger form-check mt-2"></label>
+        </div>
+
+        <div class="form-group mt-2">
+            <button type="submit" class="form-control btn btn-primary" onclick="addTicketVault()">Create</button>
+        </div>
+        
+    </div>
+
+
+    <h2 style="text-align: center; margin-top: 50px">Tickets</h2>
+
+    <div id="ticket-vault-grid"></div>
+
+    <!-- Footer -->
+    <div id="footer-template"></div>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+        renderEditEventPage()
+    </script>
+
+</body>
+</html>

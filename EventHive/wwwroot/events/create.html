@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+</head>
+<body>
+    <div id="header-template"></div>
+    
+    <div class="header-wrapper">
+        <h2>Create Your Event</h2>
+    </div>
+
+    <div class="purchase-ticket-form-wrapper" id="purchase-ticket-form-wrapper">
+        <h2 style="text-align: center; margin-top: 30px">Share your spark!</h2>
+
+        <div class="form-group has-danger">
+            <label for="event-name" class="form-label mt-4">Name it</label>
+            <input class="form-control" id="event-name" placeholder="Event's name" onchange="validateEventName()">
+            <div class="invalid-feedback" id="event-name-error">This field cannot be empty.</div>
+        </div>
+
+        <div class="form-group has-danger">
+            <label for="event-date" class="form-label mt-4">Select a date</label>
+            <input class="form-control" id="event-date" placeholder="YYYY-MM-DD" onchange="validateEventDate()">
+            <div class="invalid-feedback" id="event-date-error">Date is in a wrong format; use YYYY-MM-DD.</div>
+        </div>
+
+        <div class="form-group has-danger">
+            <label for="event-time" class="form-label mt-4">Choose its time</label>
+            <input class="form-control" id="event-time" placeholder="hh:mm" onchange="validateEventTime()">
+            <div class="invalid-feedback" id="event-time-error">Time is in a wrong format; use hh:mm.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="event-description" class="form-label mt-4">Describe it</label>
+            <textarea class="form-control" id="event-description" rows="3" placeholder="This event will leave you speechless with its..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label id="create-event-error" class="text-danger form-check mt-2"></label>
+        </div>
+
+        <div class="form-group mt-2" id="purchase-ticket">
+            <button type="submit" class="form-control btn btn-primary" onclick="addEvent()">Create</button>
+        </div>
+    </div>
+    
+    <div id="footer-template"></div>
+    
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+</body>
+</html>

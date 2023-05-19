@@ -200,7 +200,7 @@ function renderTicketVaults(eventId) {
 }
 
 
-function _renderTicketVaults(grid, collection)
+function _renderTicketVaults(grid, collection, renderControls=false)
 {
     let ticketsAvailable = false
     if (collection.length === 0) {
@@ -228,7 +228,7 @@ function _renderTicketVaults(grid, collection)
 
             let title = document.createElement('h4')
             title.className = 'card-header'
-            title.textContent = ticketVault.title
+            title.innerText = ticketVault.title
             card.appendChild(title)
 
             let cardBody = document.createElement('div')
@@ -243,7 +243,25 @@ function _renderTicketVaults(grid, collection)
             pPrice.innerText = 'Price: ' + ticketVault.price
             cardBody.appendChild(pPrice)
             
-            if (ticketVault.ticketsLeft > 0) {
+            let controls = document.createElement('div')
+            cardBody.appendChild(controls)
+            controls.style = 'display: flex; justify-content: end; gap: 10px'
+            
+            if (renderControls)
+            {
+                let editButton = document.createElement('button')
+                controls.appendChild(editButton)
+                editButton.className = 'btn btn-primary btn-sm'
+                editButton.innerText = 'Edit'
+
+                let deleteButton = document.createElement('button')
+                controls.appendChild(deleteButton)
+                deleteButton.className = 'btn btn-primary btn-sm'
+                deleteButton.innerText = 'Delete'
+                deleteButton.onclick = () => deleteTicketVault(ticketVault.id)
+            }
+            
+            if (selectElement && ticketVault.ticketsLeft > 0) {
                 let optionElement = document.createElement('option')
                 optionElement.value = ticketVault.id
                 optionElement.innerText = ticketVault.title
@@ -259,6 +277,503 @@ function _renderTicketVaults(grid, collection)
             purchaseTicketFormWrapper.hidden = false
     }
 }
+
+function validateEventName()
+{
+    let inputElement = document.getElementById("event-name")
+    if (!inputElement)
+    {
+        console.error('Cannot access #event-name element')
+        return false
+    }
+    let value = inputElement.value
+    
+    // validation
+    if (value.trim().length === 0) 
+    {
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    else
+    {
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+    }
+    return true
+}
+
+function validateEventDate()
+{
+    let inputElement = document.getElementById("event-date")
+    let errorElement = document.getElementById('event-date-error')
+    if (!inputElement || !errorElement)
+    {
+        console.error('Cannot access #event-date or #event-date-error element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        if (value.trim().length !== 0)
+        {
+            const pattern = /^\d\d\d\d-\d\d-\d\d$/;
+
+            if (!pattern.test(value))
+                throw 'Date is in a wrong format; use YYYY-MM-DD.'
+
+            let date = Date.parse(value)
+            if (!date)
+                throw 'The date is incorrect.'
+
+            if (date < Date.now())
+                throw 'The event cannot be held in the past.'
+
+            let inAYear = new Date()
+            inAYear.setFullYear(inAYear.getFullYear() + 1)
+            if (date >= inAYear)
+                throw 'The event cannot be held so far in the future...'
+        }
+
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+    }
+    catch (s) {
+        errorElement.innerText = s
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function validateEventTime()
+{
+    let inputElement = document.getElementById("event-time")
+    let errorElement = document.getElementById('event-time-error')
+    if (!inputElement || !errorElement)
+    {
+        console.error('Cannot access #event-time or #event-time-error element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        let dateElement = document.getElementById("event-date")
+        if (value.trim().length !== 0)
+        {
+            if (!dateElement || dateElement.value.trim().length === 0 || !validateEventDate())
+                throw 'Enter date first.'
+            
+            const pattern = /^\d\d:\d\d$/;
+
+            if (!pattern.test(value))
+                throw 'Time is in a wrong format; use hh:mm.'
+
+            let hour = parseInt(value.slice(0,2))
+            let minutes = parseInt(value.slice(3, 5))
+
+            if (hour > 23 || minutes > 59)
+                throw 'Time is invalid.'
+        }
+
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+    }
+    catch (s) {
+        errorElement.innerText = s
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function validateEventDateAndTime()
+{
+    let inputElement = document.getElementById("event-date-and-time")
+    let errorElement = document.getElementById('event-date-and-time-error')
+    if (!inputElement || !errorElement)
+    {
+        console.error('Cannot access #event-time or #event-time-error element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        let dateElement = document.getElementById("event-date")
+        if (value.trim().length !== 0)
+        {
+            let pattern = /^\d\d\d\d-\d\d-\d\dT\d\d:\d\d$/
+            if (!pattern.test(value))
+                throw 'Wrong format; example: 2029-12-19T18:30.'
+            
+            let date = Date.parse(value)
+            if (date < Date.now())
+                throw 'The event cannot be held in the past.'
+
+            let inAYear = new Date()
+            inAYear.setFullYear(inAYear.getFullYear() + 1)
+            if (date >= inAYear)
+                throw 'The event cannot be held so far in the future...'
+        }
+
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+    }
+    catch (s) {
+        errorElement.innerText = s
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function addEvent()
+{
+    // validate all fields first so that all errors are displayed
+    let a = validateEventName()
+    let b = validateEventDate()
+    let c = validateEventTime()
+    
+    if (!a || !b || !c)
+        return
+    
+    let event = {
+        'name': document.getElementById("event-name").value,
+        'description': document.getElementById("event-description").value
+    }
+    
+    if (document.getElementById("event-date").value.trim().length > 0)
+        event['dateAndTime'] = document.getElementById("event-date").value + 'T' + document.getElementById("event-time").value + ':00'
+    
+    fetch(ApiUri + EventsUri, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(event)
+    })
+        .then(async response => {
+            let data = await response.json()
+            if (response.ok) 
+            {
+                document.location.replace('/events/event.html?id=' + data.id)
+            }
+            else 
+            {
+                _renderCreateEventError(data)
+            }
+        })
+}
+
+function saveEvent()
+{
+    let a = validateEventName()
+    let b = validateEventDateAndTime()
+
+    if (!a || !b)
+        return
+
+    let event = {
+        id: params.get('id'),
+        name: document.getElementById("event-name").value,
+        description: document.getElementById("event-description").value,
+        dateAndTime: Date.parse(document.getElementById('event-date-and-time').value)
+    }
+
+    fetch(ApiUri + EventsUri + '/' + event.id, {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(event)
+    })
+        .then(async response => {
+            if (response.ok)
+            {
+                document.location.replace('/events/event.html?id=' + event.id)
+            }
+            else
+            {
+                console.log(JSON.stringify(event))
+                let data = await response.json()
+                if (data.errors && data.errors.Name && data.errors.Name.length > 0)
+                    _renderCreateEventError(data.errors.Name[0])
+                else
+                    _renderCreateEventError(data.title)
+            }
+        })
+        .catch(reason => console.error(reason.message))
+}
+
+function _renderCreateEventError(message = 'Cannot create event.')
+{
+    let element = document.getElementById('create-event-error')
+    if (!element)
+        console.error(message)
+    else
+        element.innerText = message
+}
+
+function renderEditEventPage()
+{
+    let nameElement = document.getElementById('event-name')
+    let dateAndTimeElement = document.getElementById('event-date-and-time')
+    let descriptionElement = document.getElementById('event-description')
+    
+    let eventId = params.get('id')
+    if (!eventId)
+        document.location.replace('/events/index.html')
+    
+    // render event's data
+    fetch(ApiUri + EventsUri + '/' + eventId)
+        .then(async response => {
+            if (!response.ok) {
+                document.location.replace('/events/index.html')
+            } else {
+                let data = await response.json()
+                nameElement.value = data.name
+                dateAndTimeElement.value = data.dateAndTime ? data.dateAndTime.slice(0, 4+1+2+1+2+1+2+1+2) : ''
+                descriptionElement.value = data.description
+            }
+        })
+        .catch(reason => console.error(reason.message))
+    
+    // render ticket vaults
+    let grid = document.getElementById('ticket-vault-grid')
+    fetch(ApiUri + TicketVaultsUri + '?eventid=' + eventId)
+        .then(async response => {
+            let data = await response.json()
+            if (!response.ok) {
+                console.error('Cannot retrieve ticket vaults')
+                console.log(data)
+            }
+            else
+            {
+                _renderTicketVaults(grid, data, true)
+            }
+        })
+    
+}
+
+function validateTicketVaultTitle()
+{
+    let inputElement = document.getElementById("ticket-vault-title")
+    if (!inputElement)
+    {
+        console.error('Cannot access #ticket-vault-title element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    if (value.trim().length === 0)
+    {
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    else
+    {
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+    }
+    return true
+}
+
+function validateTicketVaultPrice()
+{
+    let inputElement = document.getElementById("ticket-vault-price")
+    let errorElement = document.getElementById('ticket-vault-price-error')
+    let wrapperElement = document.getElementById('ticket-vault-price-wrapper')
+    if (!inputElement || !errorElement || !wrapperElement)
+    {
+        console.error('Cannot access #ticket-vault-price or #ticket-vault-price-error or #ticket-vault-price-wrapper element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        
+        let pattern = /^(\d+(\.\d\d)?)$/
+        if (!pattern.test(value))
+            throw 'Wrong format; example: 49.89.'
+
+        if (parseInt(value) < 0)    // thought it shouldn't ever strike
+            throw 'Price cannot be negative'
+        
+        wrapperElement.classList.remove('is-invalid')
+        wrapperElement.classList.add('is-valid')
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+        
+    }
+    catch (s) {
+        errorElement.innerText = s
+        wrapperElement.classList.remove('is-valid')
+        wrapperElement.classList.add('is-invalid')
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function validateTicketVaultTotal()
+{
+    let inputElement = document.getElementById("ticket-vault-total")
+    let errorElement = document.getElementById('ticket-vault-total-error')
+    if (!inputElement || !errorElement)
+    {
+        console.error('Cannot access #ticket-vault-total or #ticket-vault-total-error element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        if (value.trim().length !== 0)
+        {
+            let pattern = /^\d+$/
+            if (!pattern.test(value))
+                throw 'Wrong format; example: 250.'
+
+            if (parseInt(value) < 0)    // thought it shouldn't ever strike
+                throw 'Number of tickets cannot be negative'
+        }
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+
+    }
+    catch (s) {
+        errorElement.innerText = s
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function validateTicketVaultLeft()
+{
+    let inputElement = document.getElementById("ticket-vault-left")
+    let errorElement = document.getElementById('ticket-vault-left-error')
+    if (!inputElement || !errorElement)
+    {
+        console.error('Cannot access #ticket-vault-left or #ticket-vault-left-error element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+        if (value.trim().length !== 0)
+        {
+            let total = parseInt(document.getElementById('ticket-vault-total').value)
+            
+            if (!validateTicketVaultTotal() || isNaN(total))
+                throw 'Enter total number of tickets first.'
+            
+            let pattern = /^\d+$/
+            if (!pattern.test(value))
+                throw 'Wrong format; example: 125.'
+
+            if (parseInt(value) < 0)    // thought it shouldn't ever strike
+                throw 'Number of tickets cannot be negative.'
+            
+            if (parseInt(value) > total)
+                throw 'Cannot be grater than total number of tickets.'
+        }
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+
+    }
+    catch (s) {
+        errorElement.innerText = s
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function addTicketVault()
+{
+    let a = validateTicketVaultTitle()
+    let b = validateTicketVaultPrice()
+    let c = validateTicketVaultTotal()
+    let d = validateTicketVaultLeft()
+    
+    if (!a || !b || !c || !d)
+        return
+    
+    let ticketVault = {
+        eventId: parseInt(params.get('id')),
+        title: document.getElementById('ticket-vault-title').value,
+        price: parseFloat(document.getElementById('ticket-vault-price').value),
+        totalTickets: parseInt(document.getElementById('ticket-vault-total').value),
+        ticketsLeft: parseInt(document.getElementById('ticket-vault-left').value)
+    }
+    
+    console.log(JSON.stringify(ticketVault))
+    
+    fetch(ApiUri + TicketVaultsUri,
+        {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(ticketVault)
+        })
+        .then(async response => {
+            let data = await response.json()
+            if (response.ok)
+            {
+                document.location.reload()
+            }
+            else
+            {
+                if (data.errors && data.errors.Name && data.errors.Name.length > 0)
+                    _renderCreateTicketVaultError(data.errors.Name[0])
+                else
+                    _renderCreateTicketVaultError(data.title)
+            }
+        })
+        .catch(reason => console.error(reason))
+}
+
+function deleteTicketVault(id, reload= true)
+{
+    fetch(ApiUri + TicketVaultsUri + '/' + id, {
+        method: 'DElETE'
+    })
+        .then(async response => {
+            if (response.ok) {
+                document.location.reload()
+            } else {
+                console.error(await response.text())
+            }
+        })
+}
+
+function _renderCreateTicketVaultError(message = 'Cannot create event.')
+{
+    let element = document.getElementById('create-ticket-vault-error')
+    if (!element)
+        console.error(message)
+    else
+        element.innerText = message
+}
+
 
 function purchaseTicket()
 {

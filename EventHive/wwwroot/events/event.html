@@ -15,7 +15,10 @@
             </div>
         </div>
         <div class="" style="padding: 15px">
-            <h2 class="insert-event-name">Name should be here</h2>
+            <div class="d-flex justify-content-between">
+                <h2 class="insert-event-name"></h2>
+                <a id='edit-event-link' href=""><button class="btn btn-sm btn-outline-light p-3">Edit</button></a>
+            </div>
             <p>Held on <span class="insert-event-date-time"></span></p>
             <p class="insert-event-description"></p>
             <div class="event-categories" id="insert-event-categories"></div>
@@ -63,6 +66,7 @@
         renderEvent()
         if (params.get('id') == null)
             document.location.replace('/events/index.html')
+        document.getElementById('edit-event-link').href = '/events/edit.html?id=' + params.get('id')
     </script>
 </body>
 </html>
