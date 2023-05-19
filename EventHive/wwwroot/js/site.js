@@ -13,6 +13,7 @@ const CategoriesUri = '/Categories'
 const TicketVaultsUri = '/TicketVaults'
 const TicketsUri = '/Tickets'
 const TicketsPurchaseUri = '/Purchase'
+const PromoCodesUri = '/PromoCodes'
 
 // query parameters
 const queryString = location.search
@@ -249,8 +250,12 @@ function _renderTicketVaults(grid, collection, renderControls=false)
             
             if (renderControls)
             {
+                let editButtonWrapper = document.createElement('a')
+                controls.appendChild(editButtonWrapper)
+                editButtonWrapper.href = '/ticketvaults/edit.html?id=' + ticketVault.id
+
                 let editButton = document.createElement('button')
-                controls.appendChild(editButton)
+                editButtonWrapper.appendChild(editButton)
                 editButton.className = 'btn btn-primary btn-sm'
                 editButton.innerText = 'Edit'
 
@@ -753,6 +758,8 @@ function addTicketVault()
 
 function deleteTicketVault(id, reload= true)
 {
+    if (!confirm('You really want to delete it?'))
+        return
     fetch(ApiUri + TicketVaultsUri + '/' + id, {
         method: 'DElETE'
     })
@@ -773,7 +780,6 @@ function _renderCreateTicketVaultError(message = 'Cannot create event.')
     else
         element.innerText = message
 }
-
 
 function purchaseTicket()
 {
@@ -962,4 +968,271 @@ function deleteTicket(redirectPath = '/index.html') {
             })
             .catch(reason => console.error(reason.message))
     }
+}
+
+async function renderEditTicketVaultPage(redirectPath = '/events/index.html') {
+    let tvId = parseInt(params.get('id'))
+    if (!tvId)
+        document.location.replace(redirectPath)
+
+    let eventNameElement = document.getElementById('event-name')
+    let eventIdElement = document.getElementById('event-id')
+    let titleElement = document.getElementById('ticket-vault-title')
+    let priceElement = document.getElementById('ticket-vault-price')
+    let totalElement = document.getElementById('ticket-vault-total')
+    let leftElement = document.getElementById('ticket-vault-left')
+    let promoCodesTable = document.getElementById('promo-codes-table-body')
+
+    // retrieve ticket vault
+    let ticketVault
+    await fetch(ApiUri + TicketVaultsUri + '/' + tvId)
+        .then(async response => {
+            ticketVault = await response.json()
+            if (!response.ok)
+                document.location.replace(redirectPath)
+        })
+        .catch(reason => console.error(reason.message))
+
+    // retrieve event
+    let eventId = ticketVault.eventId
+    let event
+    await fetch(ApiUri + EventsUri + '/' + eventId)
+        .then(async response => {
+            event = await response.json()
+            if (!response.ok)
+                document.location.replace(redirectPath)
+        })
+        .catch(reason => console.error(reason.message))
+    
+    // retrieve promo codes
+    let promoCodes
+    await fetch(ApiUri + PromoCodesUri + '?ticketVaultId=' + ticketVault.id)
+        .then(async response => {
+            promoCodes = await response.json()
+            if (!response.ok)
+                document.location.replace(redirectPath)
+        })
+        .catch(reason => console.error(reason.message))
+    
+    // insert data
+    eventNameElement.value = event.name
+    eventIdElement.value = event.id
+    titleElement.value = ticketVault.title
+    priceElement.value = ticketVault.price
+    totalElement.value = ticketVault.totalTickets
+    leftElement.value = ticketVault.ticketsLeft
+    promoCodes.forEach(promoCode =>
+    {
+        let tr = document.createElement('tr')
+        promoCodesTable.appendChild(tr)
+        
+        let code = document.createElement('th')
+        code.scope = 'row'
+        code.innerText = promoCode.code
+        tr.appendChild(code)
+        
+        let discount = document.createElement('th')
+        discount.scope = 'row'
+        discount.style = 'text-align: center'
+        discount.innerText = (parseFloat(promoCode.discount) * 100).toFixed(0) + '%'
+        tr.appendChild(discount)
+
+        let buttonWrapper = document.createElement('th')
+        buttonWrapper.scope = 'row'
+        buttonWrapper.style = 'text-align: right'
+        tr.appendChild(buttonWrapper)
+        
+        let button = document.createElement('button')
+        button.className = 'btn btn-outline-danger btn-sm'
+        button.innerText = 'delete'
+        button.onclick = () => deletePromoCode(promoCode.id)
+        buttonWrapper.appendChild(button)
+    })
+    if (promoCodes.length == 0)
+    {
+        let tr = document.createElement('tr')
+        promoCodesTable.appendChild(tr)
+
+        let a = document.createElement('th')
+        a.scope = 'row'
+        tr.appendChild(a)
+
+        let b = document.createElement('th')
+        b.scope = 'row'
+        b.style = 'text-align: center'
+        b.innerText = 'Empty...'
+        tr.appendChild(b)
+
+        let c = document.createElement('th')
+        c.scope = 'row'
+        c.style = 'text-align: right'
+        tr.appendChild(c)
+    }
+}
+
+function saveTicketVault()
+{
+    let a = validateTicketVaultTitle()
+    let b = validateTicketVaultPrice()
+    let c = validateTicketVaultTotal()
+    let d = validateTicketVaultLeft()
+    
+    if (!a || !b || !c || !d)
+        return
+
+    let ticketVault = {
+        eventId: parseInt(document.getElementById('event-id').value),
+        id: parseInt(params.get('id')),
+        title: document.getElementById('ticket-vault-title').value,
+        price: parseFloat(document.getElementById('ticket-vault-price').value),
+        totalTickets: parseInt(document.getElementById('ticket-vault-total').value),
+        ticketsLeft: parseInt(document.getElementById('ticket-vault-left').value)
+    }
+
+    console.log(JSON.stringify(ticketVault))
+    
+    fetch(ApiUri + TicketVaultsUri + '/' + ticketVault.id,
+        {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(ticketVault)
+        })
+        .then(async response => {
+            if (response.ok)
+            {
+                document.location.replace('/events/edit.html?id=' + ticketVault.eventId)
+            }
+            else
+            {
+                _renderUpdateTicketVaultError(await response.text())
+            }
+        })
+        .catch(reason => console.error(reason))
+}
+
+function _renderUpdateTicketVaultError(message)
+{
+    let element = document.getElementById('create-ticket-vault-error')
+    if (element)
+        element.value = message
+    else
+        console.error(message)
+}
+
+function validatePromoCodeCode()
+{
+    let element = document.getElementById('promo-code-code')
+    let value = element?.value ?? ''
+    
+    if (value.trim().length < 3)
+    {
+        element.classList.remove('is-valid')
+        element.classList.add('is-invalid')
+        return false
+    }
+
+    element.classList.remove('is-invalid')
+    element.classList.add('is-valid')
+    return true
+}
+
+function validatePromoCodeDiscount()
+{
+    let inputElement = document.getElementById("promo-code-discount")
+    let errorElement = document.getElementById('promo-code-discount-error')
+    let wrapperElement = document.getElementById('promo-code-discount-wrapper')
+    if (!inputElement || !errorElement || !wrapperElement)
+    {
+        console.error('Cannot access #promo-code-discount or #promo-code-discount-error or #promo-code-discount-wrapper element')
+        return false
+    }
+    let value = inputElement.value
+
+    // validation
+    try {
+
+        let discount = parseFloat(value)
+        if (isNaN(discount))
+            throw 'No number provided'
+        
+        if (discount <= 0 || discount > 100)
+            throw 'Discount must be withing (0; 100]'
+
+        wrapperElement.classList.remove('is-invalid')
+        wrapperElement.classList.add('is-valid')
+        inputElement.classList.remove('is-invalid')
+        inputElement.classList.add('is-valid')
+
+    }
+    catch (s) {
+        errorElement.innerText = s
+        wrapperElement.classList.remove('is-valid')
+        wrapperElement.classList.add('is-invalid')
+        inputElement.classList.remove('is-valid')
+        inputElement.classList.add('is-invalid')
+        return false
+    }
+    return true
+}
+
+function addPromoCode()
+{
+    let a = validatePromoCodeCode()
+    let b = validatePromoCodeDiscount()
+    if (!a || !b)
+        return
+    
+    let discount = {
+        ticketVaultId: parseInt(params.get('id')),
+        code: document.getElementById('promo-code-code').value,
+        discount: parseFloat(document.getElementById('promo-code-discount').value) / 100
+    } 
+    
+    console.log(discount)
+    
+    fetch(ApiUri + PromoCodesUri, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(discount)
+    })
+        .then(async response => {
+            if (response.ok)
+                document.location.reload()
+
+            _renderAddPromoCodeError(await response.json())
+        })
+        .catch(reason => {
+            console.error(reason.message)
+        })
+}
+
+function _renderAddPromoCodeError(message)
+{
+    let element = document.getElementById('create-promo-code-error')
+    if (element)
+        element.innerText = message
+    else
+        console.error(message) 
+}
+
+function deletePromoCode(id, reload=true)
+{
+    if (!confirm('You really want to delete it?'))
+        return
+    fetch(ApiUri + PromoCodesUri + '/' + id, {
+        method: 'DElETE'
+    })
+        .then(async response => {
+            if (response.ok) {
+                document.location.reload()
+            } else {
+                console.error(await response.text())
+            }
+        })
 }

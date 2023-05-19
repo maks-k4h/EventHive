@@ -20,15 +20,17 @@ namespace EventHive.Controllers
             _context = context;
         }
 
-        // GET: api/PromoCodes
+        // GET: api/PromoCodes?ticketVaultId=13
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PromoCode>>> GetPromoCode()
+        public async Task<ActionResult<IEnumerable<PromoCode>>> GetPromoCode(int? ticketVaultId = null)
         {
             if (_context.PromoCodes == null)
             {
               return NotFound();
             }
-            return await _context.PromoCodes.ToListAsync();
+            if (ticketVaultId == null)
+                return await _context.PromoCodes.ToListAsync();
+            return await _context.PromoCodes.Where(code => code.TicketVaultId == ticketVaultId).ToListAsync();
         }
 
         // GET: api/PromoCodes/5

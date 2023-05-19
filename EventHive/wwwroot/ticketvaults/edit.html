@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Ticket Vault</title>
+</head>
+<body>
+
+    <!-- Header -->
+    <div id="header-template"></div>
+    
+    <div class="header-wrapper">
+        <h2>Edit Ticket Vault</h2>
+    </div>
+    
+    <div class="purchase-ticket-form-wrapper" id="purchase-ticket-form-wrapper">
+        <h2 style="text-align: center; margin-top: 30px">Vault's information</h2>
+        
+        <input type="hidden" id="event-id">
+
+        <div class="form-group">
+            <fieldset>
+                <label class="form-label mt-4" for="event-name">Event</label>
+                <input class="form-control" id="event-name" type="text" placeholder="Event's name here..." readonly="">
+            </fieldset>
+        </div>
+        
+        <div class="form-group has-danger">
+            <label for="ticket-vault-title" class="form-label mt-4">Title</label>
+            <input class="form-control" id="ticket-vault-title" placeholder="Type's name" onchange="validateTicketVaultTitle()">
+            <div class="invalid-feedback" id="ticket-vault-title-error">This field cannot be empty.</div>
+        </div>
+
+        <div class="form-group has-danger">
+            <label for="ticket-vault-price" class="form-label mt-4">Price</label>
+            <div class="input-group mb-3" id="ticket-vault-price-wrapper">
+                <span class="input-group-text">$</span>
+                <input type="text" id="ticket-vault-price" class="form-control" onchange="validateTicketVaultPrice()">
+
+            </div>
+            <div class="invalid-feedback" id="ticket-vault-price-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-total" class="form-label mt-4">Total</label>
+            <input class="form-control" id="ticket-vault-total" placeholder="Total number of tickets..."  onchange="validateTicketVaultTotal()"></input>
+            <div class="invalid-feedback" id="ticket-vault-total-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label for="ticket-vault-left" class="form-label mt-4">Left</label>
+            <input class="form-control" id="ticket-vault-left" placeholder="Number of tickets left..."  onchange="validateTicketVaultLeft()"></input>
+            <div class="invalid-feedback" id="ticket-vault-left-error">Invalid price</div>
+        </div>
+
+        <div class="form-group">
+            <label id="create-ticket-vault-error" class="text-danger form-check mt-2"></label>
+        </div>
+
+        <div class="form-group mt-2">
+            <button type="submit" class="form-control btn btn-primary" onclick="saveTicketVault()">Save</button>
+        </div>
+    
+    
+        <h2 style="text-align: center; margin-top: 50px">Add new promo code</h2>
+    
+        <div class="form-group has-danger">
+            <label for="promo-code-code" class="form-label mt-4">Title</label>
+            <input class="form-control" id="promo-code-code" placeholder="Type's name" onchange="validatePromoCodeCode()">
+            <div class="invalid-feedback" id="promo-code-code-error">The code has to be longer</div>
+        </div>
+    
+        <div class="form-group has-danger">
+            <label for="promo-code-discount" class="form-label mt-4">Discount</label>
+            <div class="input-group mb-3" id="promo-code-discount-wrapper">
+                <span class="input-group-text">%</span>
+                <input type="text" id="promo-code-discount" class="form-control" onchange="validatePromoCodeDiscount()">
+    
+            </div>
+            <div class="invalid-feedback" id="promo-code-discount-error">Invalid discount</div>
+        </div>
+    
+        <div class="form-group">
+            <label id="create-promo-code-error" class="text-danger form-check mt-2"></label>
+        </div>
+    
+        <div class="form-group mt-2">
+            <button type="submit" class="form-control btn btn-primary" onclick="addPromoCode()">Create</button>
+        </div>
+    
+    </div>
+    
+    
+    <h2 style="text-align: center; margin-top: 50px">Promo codes</h2>
+
+    <table class="table table-hover w-50 m-auto" id="promo-codes-table">
+        <thead>
+            <tr>
+                <th width="33.33%" scope="col">Code</th>
+                <th width="33.33%" scope="col" class="text-center">Discount</th>
+                <th width="33.33%" scope="col" style="text-align: right"></th>
+            </tr>
+        </thead>
+        <tbody id="promo-codes-table-body">
+        
+        </tbody>
+    </table>
+    
+    <!-- Footer -->
+    <div id="footer-template"></div>
+    
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+        renderEditTicketVaultPage()
+    </script>
+</body>
+</html>
