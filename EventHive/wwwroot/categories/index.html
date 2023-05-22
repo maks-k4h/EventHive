@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Categories</title>
+</head>
+<body>
+
+    <!-- Header -->
+    <div id="header-template"></div>
+
+    <div class="my-wrapper d-flex flex-column align-items-center">
+        <h2 class="mt-4">Categories of events</h2>
+        
+        
+        <div id="categories-container"></div>
+        
+        
+        <h2 class="mt-4">Categorize and conquer!</h2>
+
+        <div class="input-group" style="border-radius: 30px">
+            <input id="category-name" style="border-radius: 30px" type="text" class="form-control ps-3" placeholder="Name you category..." aria-label="Recipient's username" aria-describedby="button-addon2">
+            <button class="btn btn-primary" type="button" onclick="createCategory()">Add</button>
+        </div>
+
+        <div class="form-group">
+            <label id="create-category-error" class="text-danger form-check mt-2"></label>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div id="footer-template"></div>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/site.js"></script>
+    <script>
+        renderCategoriesPage()
+    </script>
+
+</body>
+</html>

@@ -38,7 +38,9 @@ function renderEventsGrid(wrapperId)
             .then(request => request.text())
             .then(text => wrapper.innerHTML = text)
         
-        fetch(ApiUri + EventsUri, {
+        let args = params.get('categoryId') ? 'categoryId=' + params.get('categoryId') : ''
+        
+        fetch(ApiUri + EventsUri + '?' + args, {
             method: 'GET'
         })
             .then(response => response.json())
@@ -171,7 +173,7 @@ function renderCategories(eventId, categoriesWrapper = null)
         .then(response => response.json())
         .then(categoriesCollection => categoriesCollection.forEach(category => {
             let categoryLink = document.createElement('a')
-            categoryLink.href = EventsGroupUri + EventsIndexUri + '?category=' + category.id
+            categoryLink.href = EventsGroupUri + EventsIndexUri + '?categoryId=' + category.id
             categoryLink.innerText = category.name
             categoryLink.className = 'btn btn-primary btn-sm'
             categoriesWrapper.appendChild(categoryLink)
@@ -489,7 +491,7 @@ function saveEvent()
         id: params.get('id'),
         name: document.getElementById("event-name").value,
         description: document.getElementById("event-description").value,
-        dateAndTime: Date.parse(document.getElementById('event-date-and-time').value)
+        dateAndTime: document.getElementById('event-date-and-time').value
     }
 
     fetch(ApiUri + EventsUri + '/' + event.id, {
@@ -551,6 +553,9 @@ function renderEditEventPage()
         })
         .catch(reason => console.error(reason.message))
     
+    // render categories
+    let promise = _renderEditEventCategories(eventId)
+    
     // render ticket vaults
     let grid = document.getElementById('ticket-vault-grid')
     fetch(ApiUri + TicketVaultsUri + '?eventid=' + eventId)
@@ -565,7 +570,111 @@ function renderEditEventPage()
                 _renderTicketVaults(grid, data, true)
             }
         })
+}
+
+async function _renderEditEventCategories(eventId)
+{
+    let wrapper = document.getElementById("edit-event-categories-wrapper")
+    if (!wrapper)
+    {
+        console.error("Cannot retrieve categories wrapper.")
+        return
+    }
     
+    // retrieve all categories
+    let allCategories = {}
+    let allCategoriesPromise = fetch(ApiUri + CategoriesUri)
+        .then(async response => {
+            if (!response.ok) {
+                console.error("Cannot retrieve categories")
+                return
+            }
+
+            let data = await response.json()
+            data.forEach(category => allCategories[category.id] = category.name)
+        })
+        .catch(reason => console.error(reason.message))
+    
+    // retrieve event's categories
+    let eventsCategories = {}
+    let eventsCategoriesPromise = fetch(ApiUri + EventsUri + '/' + eventId + '/categories')
+        .then(async response => {
+            if (!response.ok) {
+                console.error("Cannot retrieve event's categories")
+                return
+            }
+
+            let data = await response.json()
+            data.forEach(category => eventsCategories[category.id] = category.name)
+        })
+        .catch(reason => console.error(reason.message))
+    
+    await allCategoriesPromise
+    await eventsCategoriesPromise;
+    
+    // render categories
+    wrapper.innerHTML = ""
+    for (let key in allCategories) 
+    {
+        
+        let group = document.createElement('div')
+        group.className = 'btn-group'
+        group.role = 'group'
+        group.style = 'margin: 8px'
+        wrapper.appendChild(group)
+
+        let categoryBtn = document.createElement('button')
+        categoryBtn.type = 'button'
+        categoryBtn.className = 'btn btn-sm btn-secondary'
+        categoryBtn.innerText = allCategories[key]
+        categoryBtn.onclick = () => goToCategory(key)
+        group.appendChild(categoryBtn)
+
+        let controlBtn = document.createElement('button')
+        group.appendChild(controlBtn)
+        if (key in eventsCategories)
+        {
+            controlBtn.type = 'button'
+            controlBtn.className = 'btn btn-sm btn-secondary btn-outline-danger'
+            controlBtn.innerText = 'remove'
+            controlBtn.onclick = () => deleteEventCategory(eventId, key)
+        }
+        else
+        {
+            controlBtn.type = 'button'
+            controlBtn.className = 'btn btn-sm btn-secondary btn-outline-success'
+            controlBtn.innerText = 'add'
+            controlBtn.onclick = () => addEventCategory(eventId, key)
+        }
+    }
+}
+
+function addEventCategory(eventId, categoryId)
+{
+    fetch(ApiUri + EventsUri + '/' + eventId + '/categories/' + categoryId, {
+        method: "POST"
+    })
+        .then(async response => {
+            if (response.ok)
+                await _renderEditEventCategories(eventId)
+            else
+                alert("Sorry, cannot add this category.")
+        })
+        .catch(reason => console.error(reason.message))
+}
+
+function deleteEventCategory(eventId, categoryId)
+{
+    fetch(ApiUri + EventsUri + '/' + eventId + '/categories/' + categoryId, {
+        method: "DELETE"
+    })
+        .then(async response => {
+            if (response.ok)
+                await _renderEditEventCategories(eventId)
+            else
+                alert("Sorry, cannot delete this category.")
+        })
+        .catch(reason => console.error(reason.message))
 }
 
 function validateTicketVaultTitle()
@@ -1236,3 +1345,91 @@ function deletePromoCode(id, reload=true)
             }
         })
 }
+
+
+async function renderCategoriesPage() {
+    let categories = {}
+    await fetch(ApiUri + CategoriesUri)
+        .then(async response => categories = await response.json())
+        .catch(reason => console.error(reason.message))
+
+    let containerElement = document.getElementById('categories-container')
+    categories.forEach(category => {
+        let group = document.createElement('div')
+        group.className = 'btn-group'
+        group.role = 'group'
+        group.style = 'margin: 8px'
+        containerElement.appendChild(group)
+        
+        let categoryBtn = document.createElement('button')
+        categoryBtn.type = 'button'
+        categoryBtn.className = 'btn btn-sm btn-secondary'
+        categoryBtn.innerText = category.name
+        categoryBtn.onclick = () => goToCategory(category.id)
+        group.appendChild(categoryBtn)
+
+        let deleteBtn = document.createElement('button')
+        deleteBtn.type = 'button'
+        deleteBtn.className = 'btn btn-sm btn-secondary btn-outline-danger'
+        deleteBtn.innerText = 'delete'
+        deleteBtn.onclick = () => deleteCategory(category.id, category.name)
+        group.appendChild(deleteBtn)
+    })
+}
+
+function goToCategory(id)
+{
+    document.location.replace('/events/index.html?categoryId=' + id)
+}
+
+function deleteCategory(id, name = null, reload = true)
+{
+    let message = 'The category might be used. You really want to delete ' + (name ? 'category \'' + name + '\'' : 'the category?')
+    if (!confirm(message))
+        return
+    
+    fetch(ApiUri + CategoriesUri + '/' + id + '?force=true',{
+        method: 'DELETE'
+    })
+        .then(response => {
+            if (response.ok && reload)
+                document.location.reload()
+        })
+        .catch(reason => console.error(message))
+}
+
+function createCategory()
+{
+    let errorElement = document.getElementById('create-category-error')
+    let value = document.getElementById('category-name')?.value
+    if (value === null)
+    {
+        console.error('Cannot retrieve #category-name element.')
+    }
+    value = value.trim()
+    if (value.length === 0)
+    {
+        errorElement.innerText = 'Cannot be empty.'
+        return
+    }
+    
+    let category = {
+        name: value
+    } 
+    
+    fetch(ApiUri + CategoriesUri, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(category)
+    })
+        .then(async response => {
+            if (response.ok)
+                document.location.reload()
+            errorElement.innerText = await response.json()
+        })
+        .catch(reason => console.error(reason.message))
+}
+

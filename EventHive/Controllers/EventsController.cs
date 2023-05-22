@@ -20,14 +20,25 @@ namespace EventHive.Controllers
             _context = context;
         }
 
-        // GET: api/Events
+        // GET: api/Events?categoryId=12
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        public async Task<ActionResult<IEnumerable<Event>>> GetEvents(int? categoryId = null)
         {
             if (_context.Events == null)
             {
               return NotFound();
             }
+
+            if (categoryId != null)
+            {
+                return await _context
+                    .Events
+                    .Where(e => 
+                        _context.CategoryEvents.Count(ce => ce.EventId == e.Id && ce.CategoryId == categoryId) > 0
+                        )
+                    .ToListAsync();
+            }
+            
             return await _context.Events.ToListAsync();
         }
 
