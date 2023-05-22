@@ -20,9 +20,81 @@ const queryString = location.search
 const params = new URLSearchParams(queryString)
 
 
-function _operationFailedAlert() 
+/*
+* 
+* /EVENTS Group
+* 
+* */
+
+const Events_EventsGridId = 'events-grid'
+
+const EventsIndex_EventsGridId = 'events-grid-wrapper'
+
+const EventsEvent_ErrorRedirectPath = '/events/index.html'
+const EventsEvent_EditEventLinkId = 'edit-event-link'
+
+const EventsEdit_NameId = 'event-name'
+const EventsEdit_DateAndTimeId = 'event-date-and-time'
+const EventsEdit_DescriptionId = 'event-description'
+const EventsEdit_TicketVaultsGridId = 'ticket-vault-grid'
+const EventsEdit_ErrorRedirectPath = '/events/index.html'
+const EventsEdit_SuccessRedirectPath = '/events/index.html'
+
+
+function renderEventsIndex()
 {
-    alert('Operation failed.')
+    renderEventsGrid(EventsIndex_EventsGridId)
+}
+
+function renderEventsEvent()
+{
+    if (params.get('id') == null)
+        document.location.replace(EventsEvent_ErrorRedirectPath)
+    renderEvent(parseInt(params.get('id')))
+    document.getElementById(EventsEvent_EditEventLinkId).href = '/events/edit.html?id=' + params.get('id')
+}
+
+function renderEventsEdit()
+{
+    let nameElement = document.getElementById(EventsEdit_NameId)
+    let dateAndTimeElement = document.getElementById(EventsEdit_DateAndTimeId)
+    let descriptionElement = document.getElementById(EventsEdit_DescriptionId)
+
+    let eventId = params.get('id')
+    if (!eventId)
+        document.location.replace(EventsEdit_ErrorRedirectPath)
+
+    // render event's data
+    fetch(ApiUri + EventsUri + '/' + eventId)
+        .then(async response => {
+            if (!response.ok) {
+                document.location.replace(EventsEdit_SuccessRedirectPath)
+            } else {
+                let data = await response.json()
+                nameElement.value = data.name
+                dateAndTimeElement.value = data.dateAndTime ? data.dateAndTime.slice(0, 4+1+2+1+2+1+2+1+2) : ''
+                descriptionElement.value = data.description
+            }
+        })
+        .catch(reason => console.error(reason.message))
+
+    // render categories
+    let promise = _renderEditEventCategories(eventId)
+
+    // render ticket vaults
+    let grid = document.getElementById(EventsEdit_TicketVaultsGridId)
+    fetch(ApiUri + TicketVaultsUri + '?eventid=' + eventId)
+        .then(async response => {
+            let data = await response.json()
+            if (!response.ok) {
+                console.error('Cannot retrieve ticket vaults')
+                console.log(data)
+            }
+            else
+            {
+                _renderTicketVaults(grid, data, true)
+            }
+        })
 }
 
 function renderEventsGrid(wrapperId) 
@@ -44,7 +116,7 @@ function renderEventsGrid(wrapperId)
             method: 'GET'
         })
             .then(response => response.json())
-            .then(data => _renderEvents(document.getElementById('events-grid'), data))
+            .then(data => _renderEvents(document.getElementById(Events_EventsGridId), data))
             .catch(reason => console.error(reason.message))
     }
 }
@@ -529,49 +601,6 @@ function _renderCreateEventError(message = 'Cannot create event.')
         element.innerText = message
 }
 
-function renderEditEventPage()
-{
-    let nameElement = document.getElementById('event-name')
-    let dateAndTimeElement = document.getElementById('event-date-and-time')
-    let descriptionElement = document.getElementById('event-description')
-    
-    let eventId = params.get('id')
-    if (!eventId)
-        document.location.replace('/events/index.html')
-    
-    // render event's data
-    fetch(ApiUri + EventsUri + '/' + eventId)
-        .then(async response => {
-            if (!response.ok) {
-                document.location.replace('/events/index.html')
-            } else {
-                let data = await response.json()
-                nameElement.value = data.name
-                dateAndTimeElement.value = data.dateAndTime ? data.dateAndTime.slice(0, 4+1+2+1+2+1+2+1+2) : ''
-                descriptionElement.value = data.description
-            }
-        })
-        .catch(reason => console.error(reason.message))
-    
-    // render categories
-    let promise = _renderEditEventCategories(eventId)
-    
-    // render ticket vaults
-    let grid = document.getElementById('ticket-vault-grid')
-    fetch(ApiUri + TicketVaultsUri + '?eventid=' + eventId)
-        .then(async response => {
-            let data = await response.json()
-            if (!response.ok) {
-                console.error('Cannot retrieve ticket vaults')
-                console.log(data)
-            }
-            else
-            {
-                _renderTicketVaults(grid, data, true)
-            }
-        })
-}
-
 async function _renderEditEventCategories(eventId)
 {
     let wrapper = document.getElementById("edit-event-categories-wrapper")
@@ -959,6 +988,17 @@ function purchaseTicket()
 }
 
 
+/*
+* 
+* /TICKETS Group
+* 
+* */
+
+function renderTicketsTicket()
+{
+    renderTicket()    
+}
+
 function renderTicket(redirectPath = null)
 {
     /*
@@ -1093,13 +1133,20 @@ function deleteTicket(redirectPath = '/index.html') {
                     document.location.replace(redirectPath)
                 }
                 else
-                    _operationFailedAlert()
+                    alert('Operation failed.')
             })
             .catch(reason => console.error(reason.message))
     }
 }
 
-async function renderEditTicketVaultPage(redirectPath = '/events/index.html') {
+
+/*
+* 
+* /TICKETVAULTS Group
+* 
+* */
+
+async function renderTicketVaultsEdit(redirectPath = '/events/index.html') {
     let tvId = parseInt(params.get('id'))
     if (!tvId)
         document.location.replace(redirectPath)
@@ -1367,7 +1414,13 @@ function deletePromoCode(id, reload=true)
 }
 
 
-async function renderCategoriesPage() {
+/*
+* 
+* /CATEGORIES Group
+* 
+* */
+
+async function renderCategoriesIndex() {
     let categories = {}
     await fetch(ApiUri + CategoriesUri)
         .then(async response => categories = await response.json())

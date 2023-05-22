@@ -63,10 +63,7 @@
     <script src="/js/layout.js"></script>
     <script src="/js/site.js"></script>
     <script>
-        renderEvent()
-        if (params.get('id') == null)
-            document.location.replace('/events/index.html')
-        document.getElementById('edit-event-link').href = '/events/edit.html?id=' + params.get('id')
+        renderEventsEvent()
     </script>
 </body>
 </html>
