@@ -649,6 +649,26 @@ async function _renderEditEventCategories(eventId)
     }
 }
 
+function deleteEvent()
+{
+    let id = params.get("id")
+    if (!id)
+        alert("Sorry, the event cannot be deleted.")
+    if (!confirm("You really want to delete this event?"))
+        return
+    
+    fetch(ApiUri + EventsUri + '/' + id, {
+        method: "DELETE"
+    })
+        .then(response => {
+            if (response.ok)
+                document.location.replace("/events/index.html")
+            else
+                alert("Sorry, something went wrong while deleting the event.")
+        })
+        .catch(reason => console.error(reason))
+}
+
 function addEventCategory(eventId, categoryId)
 {
     fetch(ApiUri + EventsUri + '/' + eventId + '/categories/' + categoryId, {
