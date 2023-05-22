@@ -2,7 +2,7 @@
 // 1. Create event categories
 
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -10,7 +10,7 @@ Content-Type: application/json
   "name": "Music"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
   "name": "Food and drinks"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
   "name": "Comedy"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type: application/json
   "name": "Learning and education"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -42,7 +42,7 @@ Content-Type: application/json
   "name": "Ai"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -50,7 +50,7 @@ Content-Type: application/json
   "name": "Social"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -58,7 +58,7 @@ Content-Type: application/json
   "name": "Art and creativity"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -66,7 +66,7 @@ Content-Type: application/json
   "name": "Technology"
 }
 ###
-POST localhost:5083/api/Categories
+POST localhost:8080/api/Categories
 Content-Type: application/json
 
 {
@@ -79,7 +79,7 @@ Content-Type: application/json
 // 2. Create events
 
 ###
-POST localhost:5083/api/Events
+POST localhost:8080/api/Events
 Content-Type: application/json
 
 {
@@ -88,7 +88,7 @@ Content-Type: application/json
   "description": "A hands-on cooking class where guests can learn how to prepare a particular cuisine or dish under the guidance of a professional chef."
 }
 ###
-POST localhost:5083/api/Events
+POST localhost:8080/api/Events
 Content-Type: application/json
 
 {
@@ -97,7 +97,7 @@ Content-Type: application/json
   "description": "A night of live music featuring local artists from a variety of genres."
 }
 ###
-POST localhost:5083/api/Events
+POST localhost:8080/api/Events
 Content-Type: application/json
 
 {
@@ -106,7 +106,7 @@ Content-Type: application/json
   "description": "Guests start their Sunday with a relaxing yoga session followed by a delicious brunch spread."
 }
 ###
-POST localhost:5083/api/Events
+POST localhost:8080/api/Events
 Content-Type: application/json
 
 {
@@ -115,7 +115,7 @@ Content-Type: application/json
   "description": "A hilarious night of stand-up comedy featuring both up-and-coming and well-known comedians."
 }
 ###
-POST localhost:5083/api/Events
+POST localhost:8080/api/Events
 Content-Type: application/json
 
 {
@@ -128,26 +128,26 @@ Content-Type: application/json
 
 // 3. Link categories to events
 
-POST localhost:5083/api/Events/19/Categories/13
+POST localhost:8080/api/Events/19/Categories/13
 ###
-POST localhost:5083/api/Events/21/Categories/12
+POST localhost:8080/api/Events/21/Categories/12
 ###
-POST localhost:5083/api/Events/21/Categories/14
+POST localhost:8080/api/Events/21/Categories/14
 ###
-POST localhost:5083/api/Events/30/Categories/19
+POST localhost:8080/api/Events/30/Categories/19
 ###
-POST localhost:5083/api/Events/33/Categories/14
+POST localhost:8080/api/Events/33/Categories/14
 ###
-POST localhost:5083/api/Events/33/Categories/17
+POST localhost:8080/api/Events/33/Categories/17
 ###
-POST localhost:5083/api/Events/36/Categories/16
+POST localhost:8080/api/Events/36/Categories/16
 ###
-POST localhost:5083/api/Events/36/Categories/21
+POST localhost:8080/api/Events/36/Categories/21
 ###
 
 
 // 4. Create ticket vaults
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -159,7 +159,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -171,7 +171,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -183,7 +183,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -195,7 +195,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -207,7 +207,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -219,7 +219,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -231,7 +231,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/TicketVaults
+POST localhost:8080/api/TicketVaults
 Content-Type: application/json
 
 {
@@ -244,7 +244,7 @@ Content-Type: application/json
 
 // 5. Add promocodes
 
-POST localhost:5083/api/PromoCodes
+POST localhost:8080/api/PromoCodes
 Content-Type: application/json
 
 {
@@ -254,7 +254,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/PromoCodes
+POST localhost:8080/api/PromoCodes
 Content-Type: application/json
 
 {
@@ -267,7 +267,7 @@ Content-Type: application/json
 
 // Purchase several tickets
 
-POST localhost:5083/api/tickets/purchase/1
+POST localhost:8080/api/tickets/purchase/1
 Content-Type: application/json
 
 {
@@ -277,7 +277,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/tickets/purchase/4
+POST localhost:8080/api/tickets/purchase/4
 Content-Type: application/json
 
 {
@@ -286,7 +286,7 @@ Content-Type: application/json
 }
 ###
 
-POST localhost:5083/api/tickets/purchase/4
+POST localhost:8080/api/tickets/purchase/4
 Content-Type: application/json
 
 {

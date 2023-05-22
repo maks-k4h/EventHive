@@ -563,8 +563,10 @@ function saveEvent()
         id: params.get('id'),
         name: document.getElementById("event-name").value,
         description: document.getElementById("event-description").value,
-        dateAndTime: document.getElementById('event-date-and-time').value
     }
+    
+    if (document.getElementById('event-date-and-time').value.length !== 0)
+        event['dateAndTime'] = document.getElementById('event-date-and-time').value
 
     fetch(ApiUri + EventsUri + '/' + event.id, {
         method: "PUT",
